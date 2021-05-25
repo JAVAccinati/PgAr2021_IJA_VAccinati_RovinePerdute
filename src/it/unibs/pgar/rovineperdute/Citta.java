@@ -9,9 +9,9 @@ public class Citta {
     private int x;
     private int y;
     private int h;
-    private Map<Integer, Integer[]> link; //primo valore dell'array: Tonatiuh (X, Y), secondo valore dell'array: Metztli (H)
+    private Map<Integer, Double[]> link; //primo valore dell'array: Tonatiuh (X, Y), secondo valore dell'array: Metztli (H)
 
-    public Citta(int id, String nome, int x, int y, int h, Map<Integer, Integer[]> link) {
+    public Citta(int id, String nome, int x, int y, int h, Map<Integer, Double[]> link) {
         this.id = id;
         this.nome = nome;
         this.x = x;
@@ -60,11 +60,11 @@ public class Citta {
         this.h = h;
     }
 
-    public Map<Integer, Integer[]> getLink() {
+    public Map<Integer, Double[]> getLink() {
         return link;
     }
 
-    public void setLink(Map<Integer, Integer[]> link) {
+    public void setLink(Map<Integer, Double[]> link) {
         this.link = link;
     }
 
