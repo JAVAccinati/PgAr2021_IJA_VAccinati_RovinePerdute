@@ -10,10 +10,18 @@ public class Mappa {
     private static ArrayList<Citta> citta = new ArrayList<>();
 
     public static void main(String[] args) {
-        String nomeFile = "src/PgAr_Map_5.xml";
+        String nomeFile = "src/PgAr_Map_200.xml";
         Nodo root = OurXMLReader.readFile(nomeFile);
         nuovaMappa(root);
         calcoloDistanze();
+        calcolaLineaAria();
+
+        AstarXY();
+        //fai AstarH
+
+        //scrivi XML
+
+        //javadoc e UML
 
         System.out.println("ciao");
     }
@@ -62,8 +70,7 @@ public class Mappa {
         for (int i = 0; i < citta.size(); i++) {
             Citta cittaAttuale = citta.get(i);
             Map<Integer, Double[]> link = cittaAttuale.getLink();
-            Set<Integer> setId = link.keySet();                      //#perclarezza
-            ArrayList<Integer> id = new ArrayList<>(setId);
+            ArrayList<Integer> id = cittaAttuale.getKeyLink();
             for (int j = 0; j < id.size(); j++) {
                 int idLink = id.get(j);
                 Citta cittaLink = citta.get(idLink);
@@ -75,4 +82,50 @@ public class Mappa {
             }
         }
     }
+
+    public static void AstarXY() {
+        ArrayList<Citta> cittaDaControllare = new ArrayList<>();
+        cittaDaControllare.add(citta.get(0));
+        citta.get(0).setDistanzaOrigine(0);
+        citta.get(0).setDistanzaStimata(0);
+        for (int i = 1; i < citta.size(); i++) {
+            citta.get(i).setDistanzaOrigine(-1);
+            citta.get(i).setDistanzaStimata(-1);
+        }
+        do {
+            Citta cittaConsiderata = cittaDaControllare.get(0);
+            ArrayList<Integer> keyList = cittaConsiderata.getKeyLink();
+            for (int i = 0; i < keyList.size(); i++) {
+                Citta cittaDaCalcolare = citta.get(keyList.get(i));
+                if (!cittaDaControllare.contains(cittaDaCalcolare) && !cittaDaCalcolare.isFinito()) {
+                    cittaDaControllare.add(cittaDaCalcolare);
+                }
+                double nuovaPossibileDistanza = cittaConsiderata.getDistanzaOrigine() + cittaConsiderata.getLink().get(keyList.get(i))[0];
+                if (cittaDaCalcolare.getDistanzaOrigine() == -1 || cittaDaCalcolare.getDistanzaOrigine() > nuovaPossibileDistanza) {
+                    cittaDaCalcolare.setDistanzaOrigine(nuovaPossibileDistanza);
+                    cittaDaCalcolare.setDistanzaStimata(cittaDaCalcolare.getDistanzaOrigine() + cittaDaCalcolare.getDistanzaRovineXY());
+                    cittaDaCalcolare.setCittaPadre(cittaConsiderata);
+                }
+            }
+            cittaDaControllare.get(0).setFinito(true);
+            cittaDaControllare.remove(0);
+            for (int i = 1; i < cittaDaControllare.size(); i++) {
+                if (cittaDaControllare.get(i).getDistanzaStimata() < cittaDaControllare.get(0).getDistanzaStimata()) {
+                    Citta temp = cittaDaControllare.get(0);
+                    cittaDaControllare.set(0, cittaDaControllare.get(i));
+                    cittaDaControllare.set(i, temp);
+                }
+            }
+        } while (cittaDaControllare.size() != 0);
+    }
+
+    public static void calcolaLineaAria() {
+        Citta rovine = citta.get(citta.size() - 1);
+        for (int i = 0; i < citta.size(); i++) {
+            Citta cittaDaCalcolare = citta.get(i);
+            cittaDaCalcolare.setDistanzaRovineXY(Math.sqrt(Math.pow(cittaDaCalcolare.getX() - rovine.getX(), 2) + Math.pow(cittaDaCalcolare.getY() - rovine.getY(), 2)));
+            cittaDaCalcolare.setDistanzaRovineH(Math.abs(cittaDaCalcolare.getH() - rovine.getH()));
+        }
+    }
+
 }
