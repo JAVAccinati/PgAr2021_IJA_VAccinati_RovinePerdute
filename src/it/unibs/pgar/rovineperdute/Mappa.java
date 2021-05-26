@@ -16,6 +16,8 @@ public class Mappa {
         calcoloDistanze();
         calcolaLineaAria();
 
+        setupAstar();
+
         AstarXY();
         //fai AstarH
 
@@ -83,15 +85,16 @@ public class Mappa {
         }
     }
 
+    public static void setupAstar() {
+        citta.get(0).setDistanzaOrigineXY(0);
+        citta.get(0).setDistanzaStimataXY(0);
+        citta.get(0).setDistanzaOrigineH(0);
+        citta.get(0).setDistanzaStimataH(0);
+    }
+
     public static void AstarXY() {
         ArrayList<Citta> cittaDaControllare = new ArrayList<>();
         cittaDaControllare.add(citta.get(0));
-        citta.get(0).setDistanzaOrigine(0);
-        citta.get(0).setDistanzaStimata(0);
-        for (int i = 1; i < citta.size(); i++) {
-            citta.get(i).setDistanzaOrigine(-1);
-            citta.get(i).setDistanzaStimata(-1);
-        }
         do {
             Citta cittaConsiderata = cittaDaControllare.get(0);
             ArrayList<Integer> keyList = cittaConsiderata.getKeyLink();
@@ -100,17 +103,17 @@ public class Mappa {
                 if (!cittaDaControllare.contains(cittaDaCalcolare) && !cittaDaCalcolare.isFinito()) {
                     cittaDaControllare.add(cittaDaCalcolare);
                 }
-                double nuovaPossibileDistanza = cittaConsiderata.getDistanzaOrigine() + cittaConsiderata.getLink().get(keyList.get(i))[0];
-                if (cittaDaCalcolare.getDistanzaOrigine() == -1 || cittaDaCalcolare.getDistanzaOrigine() > nuovaPossibileDistanza) {
-                    cittaDaCalcolare.setDistanzaOrigine(nuovaPossibileDistanza);
-                    cittaDaCalcolare.setDistanzaStimata(cittaDaCalcolare.getDistanzaOrigine() + cittaDaCalcolare.getDistanzaRovineXY());
+                double nuovaPossibileDistanza = cittaConsiderata.getDistanzaOrigineXY() + cittaConsiderata.getLink().get(keyList.get(i))[0];
+                if (cittaDaCalcolare.getDistanzaOrigineXY() == -1 || cittaDaCalcolare.getDistanzaOrigineXY() > nuovaPossibileDistanza) {
+                    cittaDaCalcolare.setDistanzaOrigineXY(nuovaPossibileDistanza);
+                    cittaDaCalcolare.setDistanzaStimataXY(cittaDaCalcolare.getDistanzaOrigineXY() + cittaDaCalcolare.getDistanzaRovineXY());
                     cittaDaCalcolare.setCittaPadre(cittaConsiderata);
                 }
             }
             cittaDaControllare.get(0).setFinito(true);
             cittaDaControllare.remove(0);
             for (int i = 1; i < cittaDaControllare.size(); i++) {
-                if (cittaDaControllare.get(i).getDistanzaStimata() < cittaDaControllare.get(0).getDistanzaStimata()) {
+                if (cittaDaControllare.get(i).getDistanzaStimataXY() < cittaDaControllare.get(0).getDistanzaStimataXY()) {
                     Citta temp = cittaDaControllare.get(0);
                     cittaDaControllare.set(0, cittaDaControllare.get(i));
                     cittaDaControllare.set(i, temp);

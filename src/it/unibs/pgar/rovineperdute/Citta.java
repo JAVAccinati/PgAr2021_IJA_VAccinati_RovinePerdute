@@ -14,8 +14,10 @@ public class Citta {
     private Map<Integer, Double[]> link; //primo valore dell'array: Tonatiuh (X, Y), secondo valore dell'array: Metztli (H)
     private Citta cittaPadre;
     private boolean finito;
-    private double distanzaOrigine;
-    private double distanzaStimata;
+    private double distanzaOrigineXY;
+    private double distanzaStimataXY;
+    private double distanzaOrigineH;
+    private double distanzaStimataH;
     private double distanzaRovineXY;
     private double distanzaRovineH;
 
@@ -26,6 +28,10 @@ public class Citta {
         this.y = y;
         this.h = h;
         this.link = link;
+        this.distanzaOrigineXY = -1;
+        this.distanzaStimataXY = -1;
+        this.distanzaOrigineH = -1;
+        this.distanzaStimataH = -1;
     }
 
     public int getId() {
@@ -98,20 +104,36 @@ public class Citta {
         this.finito = finito;
     }
 
-    public double getDistanzaOrigine() {
-        return distanzaOrigine;
+    public double getDistanzaOrigineXY() {
+        return distanzaOrigineXY;
     }
 
-    public void setDistanzaOrigine(double distanzaOrigine) {
-        this.distanzaOrigine = distanzaOrigine;
+    public void setDistanzaOrigineXY(double distanzaOrigineXY) {
+        this.distanzaOrigineXY = distanzaOrigineXY;
     }
 
-    public double getDistanzaStimata() {
-        return distanzaStimata;
+    public double getDistanzaStimataXY() {
+        return distanzaStimataXY;
     }
 
-    public void setDistanzaStimata(double distanzaStimata) {
-        this.distanzaStimata = distanzaStimata;
+    public void setDistanzaStimataXY(double distanzaStimataXY) {
+        this.distanzaStimataXY = distanzaStimataXY;
+    }
+
+    public double getDistanzaOrigineH() {
+        return distanzaOrigineH;
+    }
+
+    public void setDistanzaOrigineH(double distanzaOrigineH) {
+        this.distanzaOrigineH = distanzaOrigineH;
+    }
+
+    public double getDistanzaStimataH() {
+        return distanzaStimataH;
+    }
+
+    public void setDistanzaStimataH(double distanzaStimataH) {
+        this.distanzaStimataH = distanzaStimataH;
     }
 
     public double getDistanzaRovineXY() {
