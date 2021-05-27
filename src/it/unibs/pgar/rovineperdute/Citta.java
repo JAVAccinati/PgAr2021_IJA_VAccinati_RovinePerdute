@@ -38,9 +38,9 @@ public class Citta {
         this.distanzaOrigineH = -1;
         this.distanzaStimataH = -1;
         this.numeroCittaVisitateXY = -1;
-        this.indiceMassimoXY = id;
+        this.indiceMassimoXY = 0;
         this.numeroCittaVisitateH = -1;
-        this.indiceMassimoH = id;
+        this.indiceMassimoH = 0; //id?
     }
 
     public int getId() {

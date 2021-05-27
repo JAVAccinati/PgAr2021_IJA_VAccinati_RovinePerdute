@@ -13,7 +13,7 @@ public class Mappa {
     private static ArrayList<Citta> citta = new ArrayList<>();
 
     public static void main(String[] args) {
-        String nomeFile = "src/PgAr_Map_200.xml";
+        String nomeFile = "src/PgAr_Map_10000.xml";
         Nodo rootLettura = OurXMLReader.readFile(nomeFile);
         nuovaMappa(rootLettura);
         calcoloDistanze();
@@ -21,6 +21,11 @@ public class Mappa {
 
         setupAstar();
         AstarXY();
+
+        for (int i = 0; i < citta.size(); i++) {
+            citta.get(i).setFinito(false);
+        }
+
         AstarH();
 
         Nodo rootScrittura = creaRoutes();
@@ -30,6 +35,9 @@ public class Mappa {
         //javadoc e UML
 
         //possiamo non duplicare XY e H?
+
+        //sistema A* h - funziona penso
+        //sistema indice massimo in citta precedenti?!
 
         System.out.println("ciao");
     }
@@ -105,6 +113,8 @@ public class Mappa {
         citta.get(0).setDistanzaStimataXY(0);
         citta.get(0).setDistanzaOrigineH(0);
         citta.get(0).setDistanzaStimataH(0);
+        citta.get(0).setNumeroCittaVisitateXY(0);
+        citta.get(0).setNumeroCittaVisitateH(0);
     }
 
     public static void AstarXY() {
@@ -125,7 +135,8 @@ public class Mappa {
                     if (cittaDaCalcolare.getNumeroCittaVisitateXY() > cittaConsiderata.getNumeroCittaVisitateXY()) {
                         sistemazioneNodiXY(cittaConsiderata, cittaDaCalcolare, nuovaPossibileDistanza);
                     } else if (cittaDaCalcolare.getNumeroCittaVisitateXY() == cittaConsiderata.getNumeroCittaVisitateXY()) {
-                        if (cittaDaCalcolare.getIndiceMassimoXY() < cittaConsiderata.getIndiceMassimoXY()) {
+                        //if (cittaDaCalcolare.getIndiceMassimoXY() < cittaConsiderata.getIndiceMassimoXY()) {
+                        if (cittaDaCalcolare.getIndiceMassimoXY() < cittaConsiderata.getId()) {
                             sistemazioneNodiXY(cittaConsiderata, cittaDaCalcolare, nuovaPossibileDistanza);
                         }
                     }
@@ -144,12 +155,14 @@ public class Mappa {
     }
 
     private static void sistemazioneNodiXY(Citta cittaConsiderata, Citta cittaDaCalcolare, double nuovaPossibileDistanza) {
+        //non dobvremmo scambiarle?!
         cittaDaCalcolare.setDistanzaOrigineXY(nuovaPossibileDistanza);
         cittaDaCalcolare.setDistanzaStimataXY(cittaDaCalcolare.getDistanzaOrigineXY() + cittaDaCalcolare.getDistanzaRovineXY());
+        //?!
         cittaDaCalcolare.setCittaPadreXY(cittaConsiderata);
         cittaDaCalcolare.setNumeroCittaVisitateXY(cittaConsiderata.getNumeroCittaVisitateXY() + 1);
-        if (cittaDaCalcolare.getIndiceMassimoXY() < cittaConsiderata.getIndiceMassimoXY()) {
-            cittaDaCalcolare.setIndiceMassimoXY(cittaConsiderata.getIndiceMassimoXY());
+        if (cittaDaCalcolare.getIndiceMassimoXY() < cittaConsiderata.getId()) {//ndiceMassimoXY()) {
+            cittaDaCalcolare.setIndiceMassimoXY(cittaConsiderata.getId());//ndiceMassimoXY());
         }
     }
 
@@ -164,7 +177,7 @@ public class Mappa {
                 if (!cittaDaControllare.contains(cittaDaCalcolare) && !cittaDaCalcolare.isFinito()) {
                     cittaDaControllare.add(cittaDaCalcolare);
                 }
-                double nuovaPossibileDistanza = cittaConsiderata.getDistanzaOrigineH() + cittaConsiderata.getLink().get(keyList.get(i))[0];
+                double nuovaPossibileDistanza = cittaConsiderata.getDistanzaOrigineH() + cittaConsiderata.getLink().get(keyList.get(i))[1];
                 if (cittaDaCalcolare.getDistanzaOrigineH() == -1 || cittaDaCalcolare.getDistanzaOrigineH() > nuovaPossibileDistanza) {
                     sistemazioneNodiH(cittaConsiderata, cittaDaCalcolare, nuovaPossibileDistanza);
                 } else if (cittaDaCalcolare.getDistanzaOrigineH() == nuovaPossibileDistanza) {
