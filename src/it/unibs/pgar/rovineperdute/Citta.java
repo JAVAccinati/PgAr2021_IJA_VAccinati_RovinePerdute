@@ -15,16 +15,12 @@ public class Citta {
     private Citta cittaPadreXY;
     private Citta cittaPadreH;
     private boolean finito;
-    private double distanzaOrigineXY;
-    private double distanzaStimataXY;
-    private double distanzaOrigineH;
-    private double distanzaStimataH;
+    private double distanzaOrigine;
+    private double distanzaStimata;
     private double distanzaRovineXY;
     private double distanzaRovineH;
-    private int numeroCittaVisitateXY;
-    private int indiceMassimoXY;
-    private int numeroCittaVisitateH;
-    private int indiceMassimoH;
+    private int numeroCittaVisitate;
+    private int indiceMassimo;
 
     public Citta(int id, String nome, int x, int y, int h, Map<Integer, Double[]> link) {
         this.id = id;
@@ -33,14 +29,10 @@ public class Citta {
         this.y = y;
         this.h = h;
         this.link = link;
-        this.distanzaOrigineXY = -1;
-        this.distanzaStimataXY = -1;
-        this.distanzaOrigineH = -1;
-        this.distanzaStimataH = -1;
-        this.numeroCittaVisitateXY = -1;
-        this.indiceMassimoXY = 0;
-        this.numeroCittaVisitateH = -1;
-        this.indiceMassimoH = 0; //id?
+        this.distanzaOrigine = -1;
+        this.distanzaStimata = -1;
+        this.numeroCittaVisitate = -1;
+        this.indiceMassimo = id;
     }
 
     public int getId() {
@@ -97,20 +89,20 @@ public class Citta {
         this.link = link;
     }
 
-    public Citta getCittaPadreXY() {
-        return cittaPadreXY;
+    public Citta getCittaPadre(int indiceVeicolo) {
+        if(indiceVeicolo == 0) {
+            return cittaPadreXY;
+        } else {
+            return cittaPadreH;
+        }
     }
 
-    public void setCittaPadreXY(Citta cittaPadreXY) {
-        this.cittaPadreXY = cittaPadreXY;
-    }
-
-    public Citta getCittaPadreH() {
-        return cittaPadreH;
-    }
-
-    public void setCittaPadreH(Citta cittaPadreH) {
-        this.cittaPadreH = cittaPadreH;
+    public void setCittaPadre(int indiceVeicolo, Citta cittaPadre) {
+        if(indiceVeicolo == 0) {
+            this.cittaPadreXY = cittaPadre;
+        } else {
+            this.cittaPadreH = cittaPadre;
+        }
     }
 
     public boolean isFinito() {
@@ -121,84 +113,52 @@ public class Citta {
         this.finito = finito;
     }
 
-    public double getDistanzaOrigineXY() {
-        return distanzaOrigineXY;
+    public double getDistanzaOrigine() {
+        return distanzaOrigine;
     }
 
-    public void setDistanzaOrigineXY(double distanzaOrigineXY) {
-        this.distanzaOrigineXY = distanzaOrigineXY;
+    public void setDistanzaOrigine(double distanzaOrigine) {
+        this.distanzaOrigine = distanzaOrigine;
     }
 
-    public double getDistanzaStimataXY() {
-        return distanzaStimataXY;
+    public double getDistanzaStimata() {
+        return distanzaStimata;
     }
 
-    public void setDistanzaStimataXY(double distanzaStimataXY) {
-        this.distanzaStimataXY = distanzaStimataXY;
+    public void setDistanzaStimata(double distanzaStimata) {
+        this.distanzaStimata = distanzaStimata;
     }
 
-    public double getDistanzaOrigineH() {
-        return distanzaOrigineH;
-    }
-
-    public void setDistanzaOrigineH(double distanzaOrigineH) {
-        this.distanzaOrigineH = distanzaOrigineH;
-    }
-
-    public double getDistanzaStimataH() {
-        return distanzaStimataH;
-    }
-
-    public void setDistanzaStimataH(double distanzaStimataH) {
-        this.distanzaStimataH = distanzaStimataH;
-    }
-
-    public double getDistanzaRovineXY() {
-        return distanzaRovineXY;
+    public double getDistanzaRovine(int indiceVeicolo) {
+        if(indiceVeicolo == 0) {
+            return distanzaRovineXY;
+        } else {
+            return distanzaRovineH;
+        }
     }
 
     public void setDistanzaRovineXY(double distanzaRovineXY) {
-        this.distanzaRovineXY = distanzaRovineXY;
-    }
-
-    public double getDistanzaRovineH() {
-        return distanzaRovineH;
+            this.distanzaRovineXY = distanzaRovineXY;
     }
 
     public void setDistanzaRovineH(double distanzaRovineH) {
-        this.distanzaRovineH = distanzaRovineH;
+            this.distanzaRovineH = distanzaRovineH;
     }
 
-    public int getNumeroCittaVisitateXY() {
-        return numeroCittaVisitateXY;
+    public int getNumeroCittaVisitate() {
+        return numeroCittaVisitate;
     }
 
-    public void setNumeroCittaVisitateXY(int numeroCittaVisitateXY) {
-        this.numeroCittaVisitateXY = numeroCittaVisitateXY;
+    public void setNumeroCittaVisitate(int numeroCittaVisitate) {
+        this.numeroCittaVisitate = numeroCittaVisitate;
     }
 
-    public int getIndiceMassimoXY() {
-        return indiceMassimoXY;
+    public int getIndiceMassimo() {
+        return indiceMassimo;
     }
 
-    public void setIndiceMassimoXY(int indiceMassimoXY) {
-        this.indiceMassimoXY = indiceMassimoXY;
-    }
-
-    public int getNumeroCittaVisitateH() {
-        return numeroCittaVisitateH;
-    }
-
-    public void setNumeroCittaVisitateH(int numeroCittaVisitateH) {
-        this.numeroCittaVisitateH = numeroCittaVisitateH;
-    }
-
-    public int getIndiceMassimoH() {
-        return indiceMassimoH;
-    }
-
-    public void setIndiceMassimoH(int indiceMassimoH) {
-        this.indiceMassimoH = indiceMassimoH;
+    public void setIndiceMassimo(int indiceMassimo) {
+        this.indiceMassimo = indiceMassimo;
     }
 
 }
