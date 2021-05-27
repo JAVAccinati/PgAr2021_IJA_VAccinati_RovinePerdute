@@ -12,7 +12,8 @@ public class Citta {
     private int y;
     private int h;
     private Map<Integer, Double[]> link; //primo valore dell'array: Tonatiuh (X, Y), secondo valore dell'array: Metztli (H)
-    private Citta cittaPadre;
+    private Citta cittaPadreXY;
+    private Citta cittaPadreH;
     private boolean finito;
     private double distanzaOrigineXY;
     private double distanzaStimataXY;
@@ -20,6 +21,10 @@ public class Citta {
     private double distanzaStimataH;
     private double distanzaRovineXY;
     private double distanzaRovineH;
+    private int numeroCittaVisitateXY;
+    private int indiceMassimoXY;
+    private int numeroCittaVisitateH;
+    private int indiceMassimoH;
 
     public Citta(int id, String nome, int x, int y, int h, Map<Integer, Double[]> link) {
         this.id = id;
@@ -32,6 +37,10 @@ public class Citta {
         this.distanzaStimataXY = -1;
         this.distanzaOrigineH = -1;
         this.distanzaStimataH = -1;
+        this.numeroCittaVisitateXY = -1;
+        this.indiceMassimoXY = id;
+        this.numeroCittaVisitateH = -1;
+        this.indiceMassimoH = id;
     }
 
     public int getId() {
@@ -88,12 +97,20 @@ public class Citta {
         this.link = link;
     }
 
-    public Citta getCittaPadre() {
-        return cittaPadre;
+    public Citta getCittaPadreXY() {
+        return cittaPadreXY;
     }
 
-    public void setCittaPadre(Citta cittaPadre) {
-        this.cittaPadre = cittaPadre;
+    public void setCittaPadreXY(Citta cittaPadreXY) {
+        this.cittaPadreXY = cittaPadreXY;
+    }
+
+    public Citta getCittaPadreH() {
+        return cittaPadreH;
+    }
+
+    public void setCittaPadreH(Citta cittaPadreH) {
+        this.cittaPadreH = cittaPadreH;
     }
 
     public boolean isFinito() {
@@ -150,6 +167,38 @@ public class Citta {
 
     public void setDistanzaRovineH(double distanzaRovineH) {
         this.distanzaRovineH = distanzaRovineH;
+    }
+
+    public int getNumeroCittaVisitateXY() {
+        return numeroCittaVisitateXY;
+    }
+
+    public void setNumeroCittaVisitateXY(int numeroCittaVisitateXY) {
+        this.numeroCittaVisitateXY = numeroCittaVisitateXY;
+    }
+
+    public int getIndiceMassimoXY() {
+        return indiceMassimoXY;
+    }
+
+    public void setIndiceMassimoXY(int indiceMassimoXY) {
+        this.indiceMassimoXY = indiceMassimoXY;
+    }
+
+    public int getNumeroCittaVisitateH() {
+        return numeroCittaVisitateH;
+    }
+
+    public void setNumeroCittaVisitateH(int numeroCittaVisitateH) {
+        this.numeroCittaVisitateH = numeroCittaVisitateH;
+    }
+
+    public int getIndiceMassimoH() {
+        return indiceMassimoH;
+    }
+
+    public void setIndiceMassimoH(int indiceMassimoH) {
+        this.indiceMassimoH = indiceMassimoH;
     }
 
 }

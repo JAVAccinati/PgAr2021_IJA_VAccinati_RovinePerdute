@@ -7,23 +7,29 @@ import java.util.*;
 
 public class Mappa {
 
+    public static final String TEAM_XY = "Tonathiu";
+    public static final String TEAM_H = "Metztli";
+
     private static ArrayList<Citta> citta = new ArrayList<>();
 
     public static void main(String[] args) {
         String nomeFile = "src/PgAr_Map_200.xml";
-        Nodo root = OurXMLReader.readFile(nomeFile);
-        nuovaMappa(root);
+        Nodo rootLettura = OurXMLReader.readFile(nomeFile);
+        nuovaMappa(rootLettura);
         calcoloDistanze();
         calcolaLineaAria();
 
         setupAstar();
-
         AstarXY();
-        //fai AstarH
+        AstarH();
+
+        Nodo rootScrittura = creaRoutes();
 
         //scrivi XML
 
         //javadoc e UML
+
+        //possiamo non duplicare XY e H?
 
         System.out.println("ciao");
     }
@@ -85,6 +91,15 @@ public class Mappa {
         }
     }
 
+    public static void calcolaLineaAria() {
+        Citta rovine = citta.get(citta.size() - 1);
+        for (int i = 0; i < citta.size(); i++) {
+            Citta cittaDaCalcolare = citta.get(i);
+            cittaDaCalcolare.setDistanzaRovineXY(Math.sqrt(Math.pow(cittaDaCalcolare.getX() - rovine.getX(), 2) + Math.pow(cittaDaCalcolare.getY() - rovine.getY(), 2)));
+            cittaDaCalcolare.setDistanzaRovineH(Math.abs(cittaDaCalcolare.getH() - rovine.getH()));
+        }
+    }
+
     public static void setupAstar() {
         citta.get(0).setDistanzaOrigineXY(0);
         citta.get(0).setDistanzaStimataXY(0);
@@ -105,9 +120,15 @@ public class Mappa {
                 }
                 double nuovaPossibileDistanza = cittaConsiderata.getDistanzaOrigineXY() + cittaConsiderata.getLink().get(keyList.get(i))[0];
                 if (cittaDaCalcolare.getDistanzaOrigineXY() == -1 || cittaDaCalcolare.getDistanzaOrigineXY() > nuovaPossibileDistanza) {
-                    cittaDaCalcolare.setDistanzaOrigineXY(nuovaPossibileDistanza);
-                    cittaDaCalcolare.setDistanzaStimataXY(cittaDaCalcolare.getDistanzaOrigineXY() + cittaDaCalcolare.getDistanzaRovineXY());
-                    cittaDaCalcolare.setCittaPadre(cittaConsiderata);
+                    sistemazioneNodiXY(cittaConsiderata, cittaDaCalcolare, nuovaPossibileDistanza);
+                } else if (cittaDaCalcolare.getDistanzaOrigineXY() == nuovaPossibileDistanza) {
+                    if (cittaDaCalcolare.getNumeroCittaVisitateXY() > cittaConsiderata.getNumeroCittaVisitateXY()) {
+                        sistemazioneNodiXY(cittaConsiderata, cittaDaCalcolare, nuovaPossibileDistanza);
+                    } else if (cittaDaCalcolare.getNumeroCittaVisitateXY() == cittaConsiderata.getNumeroCittaVisitateXY()) {
+                        if (cittaDaCalcolare.getIndiceMassimoXY() < cittaConsiderata.getIndiceMassimoXY()) {
+                            sistemazioneNodiXY(cittaConsiderata, cittaDaCalcolare, nuovaPossibileDistanza);
+                        }
+                    }
                 }
             }
             cittaDaControllare.get(0).setFinito(true);
@@ -122,13 +143,138 @@ public class Mappa {
         } while (cittaDaControllare.size() != 0);
     }
 
-    public static void calcolaLineaAria() {
-        Citta rovine = citta.get(citta.size() - 1);
-        for (int i = 0; i < citta.size(); i++) {
-            Citta cittaDaCalcolare = citta.get(i);
-            cittaDaCalcolare.setDistanzaRovineXY(Math.sqrt(Math.pow(cittaDaCalcolare.getX() - rovine.getX(), 2) + Math.pow(cittaDaCalcolare.getY() - rovine.getY(), 2)));
-            cittaDaCalcolare.setDistanzaRovineH(Math.abs(cittaDaCalcolare.getH() - rovine.getH()));
+    private static void sistemazioneNodiXY(Citta cittaConsiderata, Citta cittaDaCalcolare, double nuovaPossibileDistanza) {
+        cittaDaCalcolare.setDistanzaOrigineXY(nuovaPossibileDistanza);
+        cittaDaCalcolare.setDistanzaStimataXY(cittaDaCalcolare.getDistanzaOrigineXY() + cittaDaCalcolare.getDistanzaRovineXY());
+        cittaDaCalcolare.setCittaPadreXY(cittaConsiderata);
+        cittaDaCalcolare.setNumeroCittaVisitateXY(cittaConsiderata.getNumeroCittaVisitateXY() + 1);
+        if (cittaDaCalcolare.getIndiceMassimoXY() < cittaConsiderata.getIndiceMassimoXY()) {
+            cittaDaCalcolare.setIndiceMassimoXY(cittaConsiderata.getIndiceMassimoXY());
         }
+    }
+
+    public static void AstarH() {
+        ArrayList<Citta> cittaDaControllare = new ArrayList<>();
+        cittaDaControllare.add(citta.get(0));
+        do {
+            Citta cittaConsiderata = cittaDaControllare.get(0);
+            ArrayList<Integer> keyList = cittaConsiderata.getKeyLink();
+            for (int i = 0; i < keyList.size(); i++) {
+                Citta cittaDaCalcolare = citta.get(keyList.get(i));
+                if (!cittaDaControllare.contains(cittaDaCalcolare) && !cittaDaCalcolare.isFinito()) {
+                    cittaDaControllare.add(cittaDaCalcolare);
+                }
+                double nuovaPossibileDistanza = cittaConsiderata.getDistanzaOrigineH() + cittaConsiderata.getLink().get(keyList.get(i))[0];
+                if (cittaDaCalcolare.getDistanzaOrigineH() == -1 || cittaDaCalcolare.getDistanzaOrigineH() > nuovaPossibileDistanza) {
+                    sistemazioneNodiH(cittaConsiderata, cittaDaCalcolare, nuovaPossibileDistanza);
+                } else if (cittaDaCalcolare.getDistanzaOrigineH() == nuovaPossibileDistanza) {
+                    if (cittaDaCalcolare.getNumeroCittaVisitateH() > cittaConsiderata.getNumeroCittaVisitateH()) {
+                        sistemazioneNodiH(cittaConsiderata, cittaDaCalcolare, nuovaPossibileDistanza);
+                    } else if (cittaDaCalcolare.getNumeroCittaVisitateH() == cittaConsiderata.getNumeroCittaVisitateH()) {
+                        if (cittaDaCalcolare.getIndiceMassimoH() < cittaConsiderata.getIndiceMassimoH()) {
+                            sistemazioneNodiH(cittaConsiderata, cittaDaCalcolare, nuovaPossibileDistanza);
+                        }
+                    }
+                }
+            }
+            cittaDaControllare.get(0).setFinito(true);
+            cittaDaControllare.remove(0);
+            for (int i = 1; i < cittaDaControllare.size(); i++) {
+                if (cittaDaControllare.get(i).getDistanzaStimataH() < cittaDaControllare.get(0).getDistanzaStimataH()) {
+                    Citta temp = cittaDaControllare.get(0);
+                    cittaDaControllare.set(0, cittaDaControllare.get(i));
+                    cittaDaControllare.set(i, temp);
+                }
+            }
+        } while (cittaDaControllare.size() != 0);
+    }
+
+    private static void sistemazioneNodiH(Citta cittaConsiderata, Citta cittaDaCalcolare, double nuovaPossibileDistanza) {
+        cittaDaCalcolare.setDistanzaOrigineH(nuovaPossibileDistanza);
+        cittaDaCalcolare.setDistanzaStimataH(cittaDaCalcolare.getDistanzaOrigineH() + cittaDaCalcolare.getDistanzaRovineH());
+        cittaDaCalcolare.setCittaPadreH(cittaConsiderata);
+        cittaDaCalcolare.setNumeroCittaVisitateH(cittaConsiderata.getNumeroCittaVisitateH() + 1);
+        if (cittaDaCalcolare.getIndiceMassimoH() < cittaConsiderata.getIndiceMassimoH()) {
+            cittaDaCalcolare.setIndiceMassimoH(cittaConsiderata.getIndiceMassimoH());
+        }
+    }
+
+    public static Nodo creaRouteXY(Nodo nodoRoutes, String nomeTeam) {
+        Citta rovinePerdute = citta.get(citta.size() - 1);
+
+        Map<String, String> attributiRoute = new TreeMap<>();
+        attributiRoute.put("team", nomeTeam);
+        attributiRoute.put("cost", String.valueOf(rovinePerdute.getDistanzaOrigineXY()));
+        attributiRoute.put("cities", String.valueOf(rovinePerdute.getNumeroCittaVisitateXY()));
+
+        Nodo route = new Nodo("route", nodoRoutes, null, attributiRoute, null, null);
+
+        ArrayList<Nodo> nodi = new ArrayList<>();
+        Citta cittaDaAggiungere = rovinePerdute;
+        Map<String, String> attributiCitta = new TreeMap<>();
+        attributiCitta.put("id", String.valueOf(cittaDaAggiungere.getId()));
+        attributiCitta.put("name", cittaDaAggiungere.getNome());
+        Nodo nuovoNodo = new Nodo("city", route, null, attributiCitta, null, null);
+        nodi.add(nuovoNodo);
+
+        do{
+            cittaDaAggiungere = cittaDaAggiungere.getCittaPadreXY();
+
+            attributiCitta = new TreeMap<>();
+            attributiCitta.put("id", String.valueOf(cittaDaAggiungere.getId()));
+            attributiCitta.put("name", cittaDaAggiungere.getNome());
+
+            nuovoNodo = new Nodo("city", route, null, attributiCitta, null, null);
+            nodi.add(0, nuovoNodo);
+        }while(cittaDaAggiungere.getCittaPadreXY() != null);
+
+        route.setNodi(nodi);
+
+        return route;
+    }
+
+    public static Nodo creaRouteH(Nodo nodoRoutes, String nomeTeam) {
+        Citta rovinePerdute = citta.get(citta.size() - 1);
+
+        Map<String, String> attributiRoute = new TreeMap<>();
+        attributiRoute.put("team", nomeTeam);
+        attributiRoute.put("cost", String.valueOf(rovinePerdute.getDistanzaOrigineH()));
+        attributiRoute.put("cities", String.valueOf(rovinePerdute.getNumeroCittaVisitateH()));
+
+        Nodo route = new Nodo("route", nodoRoutes, null, attributiRoute, null, null);
+
+        ArrayList<Nodo> nodi = new ArrayList<>();
+        Citta cittaDaAggiungere = rovinePerdute;
+        Map<String, String> attributiCitta = new TreeMap<>();
+        attributiCitta.put("id", String.valueOf(cittaDaAggiungere.getId()));
+        attributiCitta.put("name", cittaDaAggiungere.getNome());
+        Nodo nuovoNodo = new Nodo("city", route, null, attributiCitta, null, null);
+        nodi.add(nuovoNodo);
+
+        do{
+            cittaDaAggiungere = cittaDaAggiungere.getCittaPadreH();
+
+            attributiCitta = new TreeMap<>();
+            attributiCitta.put("id", String.valueOf(cittaDaAggiungere.getId()));
+            attributiCitta.put("name", cittaDaAggiungere.getNome());
+
+            nuovoNodo = new Nodo("city", route, null, attributiCitta, null, null);
+            nodi.add(0, nuovoNodo);
+        }while(cittaDaAggiungere.getCittaPadreH() != null);
+
+        route.setNodi(nodi);
+
+        return route;
+    }
+
+    public static Nodo creaRoutes() {
+        Nodo routes = new Nodo("routes", null);
+        Nodo routeXY = creaRouteXY(routes, TEAM_XY);
+        Nodo routeH = creaRouteH(routes, TEAM_H);
+        ArrayList<Nodo> nodiRoutes = new ArrayList<>();
+        nodiRoutes.add(routeXY);
+        nodiRoutes.add(routeH);
+        return routes;
     }
 
 }
