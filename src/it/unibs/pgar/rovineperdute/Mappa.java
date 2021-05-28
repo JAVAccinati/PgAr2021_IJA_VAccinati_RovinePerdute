@@ -5,33 +5,56 @@ import it.unibs.fp.ourlib.*;
 
 import java.util.*;
 
+/**
+ * Si occupa della creazione del percorso piu' efficiente.
+ * Per questo fine crea un array delle citta' dopo aver ricevuto il nodo radice dalla lettura del file XML e converte
+ * il percorso, calcolato grazie ad un algoritmo A*, in un albero per poter chiamare il writerXML
+ */
 public class Mappa {
+
+    //COSTANTI
 
     public static final String[] NOMI_TEAM = {"Tonathiu", "Metztli"};
 
-    private static ArrayList<Citta> citta = new ArrayList<>();
+    //ATTRIBUTI
 
-    public static void main(String[] args) {
+    private static ArrayList<Citta> citta;
 
-        String nomeFileInput = "src/PgAr_Map_5.xml";
-        String nomeFileOutput = "src/routes.xml";
+    private static double[] distanze = new double[2];
+    private static int[] numeroCitta = new int[2];
 
+    //METODI
+
+    /**
+     * Il cuore della classe Mappa; aggrega tutte le chiamate ai metodi necessarie perche'
+     * la classe svolga il suo compito
+     * @param nomeFileInput: String
+     * @param nomeFileOutput: String
+     */
+    public static void calcolaPercorsi(String nomeFileInput, String nomeFileOutput) {
+        citta = new ArrayList<>();
+
+        //inizializzazione dell'array delle citta'
         Nodo rootLettura = OurXMLReader.readFile(nomeFileInput);
         nuovaMappa(rootLettura);
+
+        //calcolo attributi mancanti delle citta'
         calcoloDistanze();
         calcolaLineaAria();
 
-        ArrayList<Double> valoriXML = Astar(); //Costo carburante - Numero citta' - Costo carburante - Numero citta'
+        //algoritmo magico
+        Astar();
 
-        Nodo rootScrittura = creaRoutes(valoriXML);
-
+        //conversione e scrittura del file risultante
+        Nodo rootScrittura = creaRoutes();
         OurXMLWriter.writeFile(nomeFileOutput, rootScrittura);
-
-        //javadoc e UML
-
-        System.out.println("ciao");
     }
 
+    /**
+     * Grazie a questo metodo inizializziamo un'array di citta' con tutte le informazioni necessarie
+     * partendo dal nodo radice dell'albero ottenuto dalla lettura del file input.
+     * @param root: Nodo
+     */
     public static void nuovaMappa(Nodo root) {
         for (int i = 0; i < root.getNodi().size(); i++) {
             Nodo nodoAttuale = root.getNodi().get(i);
@@ -72,6 +95,11 @@ public class Mappa {
         }
     }
 
+    /**
+     * Calcola e salva nell'apposito attributo le distanze che ci sono tra una citta' e quelle ad essa
+     * collegate.
+     * Questo avviene per ogni citta' salvata.
+     */
     public static void calcoloDistanze() {
         for (int i = 0; i < citta.size(); i++) {
             Citta cittaAttuale = citta.get(i);
@@ -89,6 +117,11 @@ public class Mappa {
         }
     }
 
+    /**
+     * Calcola la distanza il linea d'aria, sia lungo il piano X,Y che lungo H, tra le rovine e ogni citta'.
+     * Salva cosi' questo valore nell'apposito attributo di citta'.
+     * Questa distanza ci e' necessaria per la definizione di funzione euristica nell'algoritmo A*.
+     */
     public static void calcolaLineaAria() {
         Citta rovine = citta.get(citta.size() - 1);
         for (int i = 0; i < citta.size(); i++) {
@@ -98,11 +131,14 @@ public class Mappa {
         }
     }
 
+    /**
+     * Setup degli attributi delle citta' prima di poter applicare l'algoritmo A*
+     */
     public static void setupAstar() {
         Citta campoBase = citta.get(0);
         campoBase.setDistanzaOrigine(0);
         campoBase.setDistanzaStimata(0);
-        campoBase.setNumeroCittaVisitate(0);
+        campoBase.setNumeroCittaVisitate(1);
         for (int i = 1; i < citta.size(); i++) {
             Citta cittaDaSistemare = citta.get(i);
             cittaDaSistemare.setDistanzaOrigine(-1);
@@ -114,10 +150,18 @@ public class Mappa {
 
     }
 
-    public static ArrayList<Double> Astar() {
-        ArrayList<Double> valoriXML = new ArrayList<>();
+    /**
+     * Applicazione dell'algoritmo A* ad un array di citta'.
+     * Il metodo svolge conseguentemente l'algoritmo per le necessita' del veicolo "Tonathiu"(0) e poi per Metztli(1).
+     *
+     * Come funzione euristica consideriamo la somma tra la distanza reale della citta' dal campo base e la distanza in
+     * linea d'aria con le rovine perdute.
+     */
+    public static void Astar() {
         for (int indiceVeicolo = 0; indiceVeicolo < 2; indiceVeicolo++) {
             setupAstar();
+            //cittaDaControllare -> citta' dalla quale ci si deve spostare
+            //cittaConsiderata -> citta' collegata a cittaDaControllare di cui si sta analizzando l'efficienza del percorso
             ArrayList<Citta> cittaDaControllare = new ArrayList<>();
             cittaDaControllare.add(citta.get(0));
             do {
@@ -128,13 +172,16 @@ public class Mappa {
                     if (!cittaDaControllare.contains(cittaDaCalcolare) && !cittaDaCalcolare.isFinito()) {
                         cittaDaControllare.add(cittaDaCalcolare);
                     }
+                    //valore della funzione euristica
                     double nuovaPossibileDistanza = cittaConsiderata.getDistanzaOrigine() + cittaConsiderata.getLink().get(keyList.get(i))[indiceVeicolo];
                     if (cittaDaCalcolare.getDistanzaOrigine() == -1 || cittaDaCalcolare.getDistanzaOrigine() > nuovaPossibileDistanza) {
                         sistemazioneNodi(indiceVeicolo, cittaConsiderata, cittaDaCalcolare, nuovaPossibileDistanza);
-                    } else if (cittaDaCalcolare.getDistanzaOrigine() == nuovaPossibileDistanza) {
+                    } //controllo caso due percorsi con lo stesso costo in carburante
+                    else if (cittaDaCalcolare.getDistanzaOrigine() == nuovaPossibileDistanza) {
                         if (cittaDaCalcolare.getNumeroCittaVisitate() > cittaConsiderata.getNumeroCittaVisitate()) {
                             sistemazioneNodi(indiceVeicolo, cittaConsiderata, cittaDaCalcolare, nuovaPossibileDistanza);
-                        } else if (cittaDaCalcolare.getNumeroCittaVisitate() == cittaConsiderata.getNumeroCittaVisitate()) {
+                        } //controllo caso due percorsi con lo stesso costo in carburante E stesso numero di citta' visitate
+                        else if (cittaDaCalcolare.getNumeroCittaVisitate() == cittaConsiderata.getNumeroCittaVisitate()) {
                             if (cittaDaCalcolare.getIndiceMassimo() < cittaConsiderata.getIndiceMassimo()) {
                                 sistemazioneNodi(indiceVeicolo, cittaConsiderata, cittaDaCalcolare, nuovaPossibileDistanza);
                             }
@@ -143,6 +190,7 @@ public class Mappa {
                 }
                 cittaDaControllare.get(0).setFinito(true);
                 cittaDaControllare.remove(0);
+                //Selezione secondo funzione euristica della prossima citta da cui muoversi
                 for (int i = 1; i < cittaDaControllare.size(); i++) {
                     if (cittaDaControllare.get(i).getDistanzaStimata() < cittaDaControllare.get(0).getDistanzaStimata()) {
                         Citta temp = cittaDaControllare.get(0);
@@ -152,12 +200,18 @@ public class Mappa {
                 }
             } while (cittaDaControllare.size() != 0);
             Citta rovine = citta.get(citta.size() - 1);
-            valoriXML.add(rovine.getDistanzaOrigine());
-            valoriXML.add((double) rovine.getNumeroCittaVisitate());
+            distanze[indiceVeicolo] = Math.round(rovine.getDistanzaOrigine() * 100.0) / 100.0;
+            numeroCitta[indiceVeicolo] = rovine.getNumeroCittaVisitate();
         }
-        return valoriXML;
     }
 
+    /**
+     * Aggiornamento dei valori della citta' che e' stata calcolata
+     * @param indiceVeicolo: int
+     * @param cittaConsiderata: Citta
+     * @param cittaDaCalcolare: Citta
+     * @param nuovaPossibileDistanza: double
+     */
     private static void sistemazioneNodi(int indiceVeicolo, Citta cittaConsiderata, Citta cittaDaCalcolare, double nuovaPossibileDistanza) {
         cittaDaCalcolare.setDistanzaOrigine(nuovaPossibileDistanza);
         cittaDaCalcolare.setDistanzaStimata(cittaDaCalcolare.getDistanzaOrigine() + cittaDaCalcolare.getDistanzaRovine(indiceVeicolo));
@@ -168,21 +222,29 @@ public class Mappa {
         }
     }
 
-    public static Nodo creaRoute(int indiceVeicolo, Nodo nodoRoutes, ArrayList<Double> valoriXML) {
+    /**
+     * Crea l'albero rappresentante un singolo percorso migliore (o per Tonathiu o per Metztli).
+     * Ritorna il nodo radice.
+     * @param indiceVeicolo: int
+     * @param nodoRoutes: Nodo
+     * @return nodoRadice: Nodo
+     */
+    public static Nodo creaRoute(int indiceVeicolo, Nodo nodoRoutes) {
         Citta rovinePerdute = citta.get(citta.size() - 1);
 
         Map<String, String> attributiRoute = new TreeMap<>();
-        attributiRoute.put("team", NOMI_TEAM[indiceVeicolo]);
-        attributiRoute.put("cost", String.valueOf(valoriXML.get(indiceVeicolo * 2)));
-        attributiRoute.put("cities", String.valueOf(valoriXML.get(1 + indiceVeicolo * 2)));
+        //La dicitura nNomeAttributo la usiamo per poter ordinare a nostro piacimento i vari attributi
+        attributiRoute.put("1team", NOMI_TEAM[indiceVeicolo]);
+        attributiRoute.put("2cost", String.valueOf(distanze[indiceVeicolo]));
+        attributiRoute.put("3cities", String.valueOf(numeroCitta[indiceVeicolo]));
 
         Nodo route = new Nodo("route", nodoRoutes, null, attributiRoute, null, null);
 
         ArrayList<Nodo> nodi = new ArrayList<>();
         Citta cittaDaAggiungere = rovinePerdute;
         Map<String, String> attributiCitta = new TreeMap<>();
-        attributiCitta.put("id", String.valueOf(cittaDaAggiungere.getId()));
-        attributiCitta.put("name", cittaDaAggiungere.getNome());
+        attributiCitta.put("1id", String.valueOf(cittaDaAggiungere.getId()));
+        attributiCitta.put("2name", cittaDaAggiungere.getNome());
         Nodo nuovoNodo = new Nodo("city", route, null, attributiCitta, null, null);
         nodi.add(nuovoNodo);
 
@@ -190,8 +252,8 @@ public class Mappa {
             cittaDaAggiungere = cittaDaAggiungere.getCittaPadre(indiceVeicolo);
 
             attributiCitta = new TreeMap<>();
-            attributiCitta.put("id", String.valueOf(cittaDaAggiungere.getId()));
-            attributiCitta.put("name", cittaDaAggiungere.getNome());
+            attributiCitta.put("1id", String.valueOf(cittaDaAggiungere.getId()));
+            attributiCitta.put("2name", cittaDaAggiungere.getNome());
 
             nuovoNodo = new Nodo("city", route, null, attributiCitta, null, null);
             nodi.add(0, nuovoNodo);
@@ -202,10 +264,14 @@ public class Mappa {
         return route;
     }
 
-    public static Nodo creaRoutes(ArrayList<Double> valoriXML) {
+    /**
+     * Accorpa i 2 percorsi (X,Y e H) unendoli in un solo albero di cui restituisce il nodo radice
+     * @return nodoRadice: Nodo
+     */
+    public static Nodo creaRoutes() {
         Nodo routes = new Nodo("routes", null);
-        Nodo routeXY = creaRoute(0, routes, valoriXML);
-        Nodo routeH = creaRoute(1, routes, valoriXML);
+        Nodo routeXY = creaRoute(0, routes);
+        Nodo routeH = creaRoute(1, routes);
         ArrayList<Nodo> nodiRoutes = new ArrayList<>();
         nodiRoutes.add(routeXY);
         nodiRoutes.add(routeH);

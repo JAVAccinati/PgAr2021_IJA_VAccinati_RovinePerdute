@@ -4,16 +4,31 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Classe che rappresenta l'oggetto citta'.
+ * Questo e' caratterizzato da tutte le informazioni utili per riconoscerlo e calcolare il percorso migliore
+ */
 public class Citta {
+
+    //ATTRIBUTI
 
     private int id;
     private String nome;
     private int x;
     private int y;
     private int h;
-    private Map<Integer, Double[]> link; //primo valore dell'array: Tonatiuh (X, Y), secondo valore dell'array: Metztli (H)
+    /*
+        Nella seguente mappa la chiave e' l'id della citta collegata, mentre nell'array (valore collegato) il primo
+        double e' la distanza dalla citta' collegata sul piano X,Y (che interessa il mezzo Tonatiuh) e il secondo
+        la distanza su H (che interessa invece Metztli)
+     */
+    private Map<Integer, Double[]> link;
     private Citta cittaPadreXY;
     private Citta cittaPadreH;
+    /*
+        Rappresenta lo "stato di analisi" di una citta': quando ho calcolato tutti i percorsi che
+        lo interessano questo valore diventa vero.
+     */
     private boolean finito;
     private double distanzaOrigine;
     private double distanzaStimata;
@@ -21,6 +36,8 @@ public class Citta {
     private double distanzaRovineH;
     private int numeroCittaVisitate;
     private int indiceMassimo;
+
+    //COSTRUTTORE
 
     public Citta(int id, String nome, int x, int y, int h, Map<Integer, Double[]> link) {
         this.id = id;
@@ -35,6 +52,8 @@ public class Citta {
         this.indiceMassimo = id;
     }
 
+    //GETTERS AND SETTERS
+
     public int getId() {
         return id;
     }
@@ -45,10 +64,6 @@ public class Citta {
 
     public String getNome() {
         return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public int getX() {
