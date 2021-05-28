@@ -12,8 +12,8 @@ public class RovinePerduteMain {
 
     public static final String[] NOMI_FILE_INPUT = {"src/PgAr_Map_5.xml", "src/PgAr_Map_12.xml",
             "src/PgAr_Map_50.xml", "src/PgAr_Map_200.xml", "src/PgAr_Map_2000.xml", "src/PgAr_Map_10000.xml"};
-    public static final String[] NOMI_FILE_OUTPUT = {"src/Routes_5.xml", "src/Routes_12.xml",
-            "src/Routes_50.xml", "src/Routes_200.xml", "src/Routes_2000.xml", "src/Routes_10000.xml", "src/Routes.xml"};
+    public static final String[] NOMI_FILE_OUTPUT = {"src/easterEgg/Routes_5.xml", "src/easterEgg/Routes_12.xml",
+            "src/easterEgg/Routes_50.xml", "src/easterEgg/Routes_200.xml", "src/easterEgg/Routes_2000.xml", "src/easterEgg/Routes_10000.xml", "src/Routes.xml"};
     public static final int[] numeroCitta = {5, 12, 50, 200, 2000, 10000};
 
     public static final String TITOLO = "" +
@@ -26,11 +26,11 @@ public class RovinePerduteMain {
 
     public static final String TITOLO_MENU = "Ricerca la via piu' rapida per i nostri valorosi ricercatori";
     public static final String[] SCELTE_MENU = {"Mappa di 5 citta'", "Mappa di 12 citta'",
-            "Mappa di 50 citta'", "Mappa di 200 citta'", "Mappa di 2000 citta'", "Mappa di 10000 citta'", "eaSteR eGg"};
+            "Mappa di 50 citta'", "Mappa di 200 citta'", "Mappa di 2000 citta'", "Mappa di 10000 citta'", "ƃƃǝ ɹǝʇsɐǝ ¯\\_( ❛ ᴗ ❛ )_/¯"};
 
-    public static final String MSG_INIZIO_CALCOLO = "Inizio calcolo rotta della mappa con %d citta'";
+    public static final String MSG_INIZIO_CALCOLO = "Inizio calcolo rotta della mappa con %d citta'...";
     public static final String MSG_FINE_CALCOLO = "Calcolo eseguito in %.2f s";
-    public static double NANO_SECONDI_IN_SECONDO = 10e8; //?!
+    public static double NANO_SECONDI_IN_SECONDO = 10e8; //10e9 non funziona :/
 
     public static final String MSG_FINE = "\n\nGrazie per averci affidato questo prestigioso incarico.\n" +
             "Buona fortuna per la vostra spedizione!\n" +
@@ -47,7 +47,6 @@ public class RovinePerduteMain {
         int scelta;
         do {
             scelta = menu.scegli();
-            System.out.println();
             switch(scelta) {
                 case 1:
                 case 2:
@@ -60,7 +59,6 @@ public class RovinePerduteMain {
                 case 7:
                     for (int i = 0; i < 6; i++) {
                         eseguiCalcoloPercorso(numeroCitta[i], i, i);
-                        System.out.println();
                     }
                     break;
                 case 0:
@@ -80,9 +78,10 @@ public class RovinePerduteMain {
      * @param indiceFileOutput: int
      */
     public static void eseguiCalcoloPercorso(int indiceCitta, int indiceFileInput, int indiceFileOutput) {
-        //La prima esecuzione richiede piu' tempo, a prescindere dal file scelto in input.
-        //Pensiamo sia perche' deve preparare delle risorse che utilizza anche successivamente,
-        //ma che poi non devono essere ri-inizializzate
+        //La prima esecuzione richiede piu' tempo, a prescindere dal file scelto come input.
+        //Pensiamo sia perche' deve preparare delle risorse, che utilizza anche successivamente,
+        //ma che non devono essere ri-inizializzate
+        System.out.println();
         long startTime = System.nanoTime();
         System.out.println(String.format(MSG_INIZIO_CALCOLO, indiceCitta));
         Mappa.calcolaPercorsi(NOMI_FILE_INPUT[indiceFileInput], NOMI_FILE_OUTPUT[indiceFileOutput]);

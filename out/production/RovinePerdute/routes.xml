@@ -1,32 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <routes>
-	<route team="Tonathiu" cost="38070.18" cities="12">
+	<route team="Tonathiu" cost="11115.51" cities="3">
 		<city id="0" name="campo base"/>
-		<city id="5" name="Guaia"/>
-		<city id="12" name="Guaia"/>
-		<city id="16" name="Guaia"/>
-		<city id="21" name="Verolanuova"/>
-		<city id="27" name="Guapalupa"/>
-		<city id="30" name="Guaia"/>
-		<city id="32" name="Machu Picchu"/>
-		<city id="37" name="Rio"/>
-		<city id="38" name="Quetzacoatl"/>
-		<city id="44" name="Mixco Vieio"/>
-		<city id="49" name="Rovine Perdute"/>
+		<city id="3" name="Mixco Vieio"/>
+		<city id="4" name="Rovine Perdute"/>
 	</route>
-	<route team="Metztli" cost="9345.0" cities="13">
+	<route team="Metztli" cost="1791.0" cities="3">
 		<city id="0" name="campo base"/>
-		<city id="6" name="Rio"/>
-		<city id="8" name="Qu'umarkaj"/>
-		<city id="10" name="Teotiguacan"/>
-		<city id="17" name="Qu'umarkaj"/>
-		<city id="16" name="Guaia"/>
-		<city id="21" name="Verolanuova"/>
-		<city id="27" name="Guapalupa"/>
-		<city id="33" name="Quetzacoatl"/>
-		<city id="40" name="Qu'umarkaj"/>
-		<city id="38" name="Quetzacoatl"/>
-		<city id="44" name="Mixco Vieio"/>
-		<city id="49" name="Rovine Perdute"/>
+		<city id="3" name="Mixco Vieio"/>
+		<city id="4" name="Rovine Perdute"/>
 	</route>
 </routes>
