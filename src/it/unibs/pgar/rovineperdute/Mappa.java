@@ -20,7 +20,7 @@ public class Mappa {
 
     private static ArrayList<Citta> citta;
 
-    private static double[] distanze = new double[2];
+    private static double[] carburante = new double[2];
     private static int[] numeroCitta = new int[2];
 
     //METODI
@@ -200,7 +200,7 @@ public class Mappa {
                 }
             } while (cittaDaControllare.size() != 0);
             Citta rovine = citta.get(citta.size() - 1);
-            distanze[indiceVeicolo] = Math.round(rovine.getDistanzaOrigine() * 100.0) / 100.0;
+            carburante[indiceVeicolo] = Math.round(rovine.getDistanzaOrigine() * 100.0) / 100.0;
             numeroCitta[indiceVeicolo] = rovine.getNumeroCittaVisitate();
         }
     }
@@ -235,7 +235,7 @@ public class Mappa {
         Map<String, String> attributiRoute = new TreeMap<>();
         //La dicitura nNomeAttributo la usiamo per poter ordinare a nostro piacimento i vari attributi
         attributiRoute.put("1team", NOMI_TEAM[indiceVeicolo]);
-        attributiRoute.put("2cost", String.valueOf(distanze[indiceVeicolo]));
+        attributiRoute.put("2cost", String.valueOf(carburante[indiceVeicolo]));
         attributiRoute.put("3cities", String.valueOf(numeroCitta[indiceVeicolo]));
 
         Nodo route = new Nodo("route", nodoRoutes, null, attributiRoute, null, null);
